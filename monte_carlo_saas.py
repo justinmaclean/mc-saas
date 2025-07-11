@@ -291,12 +291,28 @@ if st.sidebar.button("🚀 Run Simulation", type="primary"):
     run_simulation()
     st.session_state.previous_params_hash = params_hash
 
+# Initialize session state variables if they don't exist
+if 'simulation_complete' not in st.session_state:
+    st.session_state.simulation_complete = False
+if 'npv_results' not in st.session_state:
+    st.session_state.npv_results = []
+if 'arr_results' not in st.session_state:
+    st.session_state.arr_results = []
+if 'clv_results' not in st.session_state:
+    st.session_state.clv_results = []
+if 'annual_revenue_results' not in st.session_state:
+    st.session_state.annual_revenue_results = []
+if 'annual_ebitda_results' not in st.session_state:
+    st.session_state.annual_ebitda_results = []
+if 'simulation_inputs' not in st.session_state:
+    st.session_state.simulation_inputs = []
+
 # Display results if simulation has been run
-if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulation_complete and hasattr(st.session_state, 'npv_results'):
+if st.session_state.simulation_complete and len(st.session_state.npv_results) > 0:
     st.header("📈 Simulation Results")
     
     # Summary statistics
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.metric(
@@ -313,7 +329,18 @@ if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulat
         )
     
     with col3:
-        if hasattr(st.session_state, 'clv_results') and len(st.session_state.clv_results) > 0:
+        if len(st.session_state.simulation_inputs) > 0:
+            mrr_values = [params['mrr'] for params in st.session_state.simulation_inputs]
+            st.metric(
+                "Mean MRR/Customer", 
+                f"${np.mean(mrr_values):,.0f}",
+                f"±${np.std(mrr_values):,.0f}"
+            )
+        else:
+            st.metric("Mean MRR/Customer", "N/A", "Run simulation")
+    
+    with col4:
+        if len(st.session_state.clv_results) > 0:
             st.metric(
                 "Mean CLV", 
                 f"${np.mean(st.session_state.clv_results):,.0f}",
@@ -322,7 +349,7 @@ if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulat
         else:
             st.metric("Mean CLV", "N/A", "No finite values")
     
-    with col4:
+    with col5:
         st.metric(
             "Mean Final Customers", 
             f"{np.mean(st.session_state.final_customers_results):,.0f}",
@@ -502,24 +529,44 @@ if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulat
         else:
             st.info("Run a simulation to see EBITDA progression analysis")
     
-    # NPV and ARR distribution histograms (side by side)
+    # NPV distribution on its own row
+    st.subheader("NPV Distribution")
+    fig_npv = px.histogram(
+        x=st.session_state.npv_results,
+        nbins=50,
+        title="Net Present Value Distribution",
+        labels={'x': 'NPV ($)', 'y': 'Frequency'}
+    )
+    fig_npv.add_vline(
+        x=np.mean(st.session_state.npv_results),
+        line_dash="dash",
+        line_color="red",
+        annotation_text="Mean"
+    )
+    st.plotly_chart(fig_npv, use_container_width=True)
+    
+    # MRR per customer and ARR distribution histograms (side by side)
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("NPV Distribution")
-        fig_npv = px.histogram(
-            x=st.session_state.npv_results,
-            nbins=50,
-            title="Net Present Value Distribution",
-            labels={'x': 'NPV ($)', 'y': 'Frequency'}
-        )
-        fig_npv.add_vline(
-            x=np.mean(st.session_state.npv_results),
-            line_dash="dash",
-            line_color="red",
-            annotation_text="Mean"
-        )
-        st.plotly_chart(fig_npv, use_container_width=True)
+        st.subheader("💵 Monthly Recurring Revenue per Customer")
+        if len(st.session_state.simulation_inputs) > 0:
+            mrr_values = [params['mrr'] for params in st.session_state.simulation_inputs]
+            fig_mrr = px.histogram(
+                x=mrr_values,
+                nbins=50,
+                title="MRR per Customer Distribution",
+                labels={'x': 'MRR per Customer ($)', 'y': 'Frequency'}
+            )
+            fig_mrr.add_vline(
+                x=np.mean(mrr_values),
+                line_dash="dash",
+                line_color="red",
+                annotation_text="Mean"
+            )
+            st.plotly_chart(fig_mrr, use_container_width=True)
+        else:
+            st.info("Run a simulation to see MRR distribution")
     
     with col2:
         st.subheader("ARR Distribution")
@@ -582,7 +629,7 @@ if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulat
     # Percentile analysis
     st.subheader("📊 Percentile Analysis")
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         st.write("**NPV Percentiles**")
@@ -594,6 +641,19 @@ if hasattr(st.session_state, 'simulation_complete') and st.session_state.simulat
         st.dataframe(npv_df, use_container_width=True, hide_index=True)
     
     with col2:
+        st.write("**MRR per Customer Percentiles**")
+        if len(st.session_state.simulation_inputs) > 0:
+            mrr_values = [params['mrr'] for params in st.session_state.simulation_inputs]
+            mrr_percentiles = np.percentile(mrr_values, [5, 25, 50, 75, 95])
+            mrr_df = pd.DataFrame({
+                'Percentile': ['5th', '25th', '50th (Median)', '75th', '95th'],
+                'MRR ($)': [f"${val:,.0f}" for val in mrr_percentiles]
+            })
+            st.dataframe(mrr_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("Run a simulation to see MRR percentiles")
+    
+    with col3:
         st.write("**ARR Percentiles**")
         arr_percentiles = np.percentile(st.session_state.arr_results, [5, 25, 50, 75, 95])
         arr_df = pd.DataFrame({
@@ -631,6 +691,7 @@ else:
     This Monte Carlo simulation will provide:
     
     - **NPV Distribution**: Histogram showing the range of possible Net Present Values
+    - **MRR per Customer Distribution**: Histogram showing the range of Monthly Recurring Revenue per customer
     - **ARR Distribution**: Histogram showing the range of possible Annual Recurring Revenue
     - **Annual Revenue Progression**: Chart showing revenue growth over 5 years with confidence bands
     - **EBITDA Progression**: Chart showing EBITDA growth over 5 years with confidence bands
