@@ -53,13 +53,18 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("👥 Customer Acquisition")
 
 # Distribution options
+info_tooltip = (
+    """
+**Distribution Types:**\n\n- **Normal**: Bell curve, symmetric around mean. Good for costs, growth rates.\n- **Log-normal**: Right-skewed, positive only. Good for revenue, support costs.\n- **Uniform**: Equal probability between bounds (mean ± std). Use for flat uncertainty.\n- **Triangular**: Most likely at mean, linear drop-off to bounds (mean ± std). Use for conservative/range estimates.\n- **Beta**: Bounded 0-1, good for rates/percentages (e.g., churn).\n- **Gamma**: Right-skewed, positive only. Good for count-like or highly variable positive values.\n\n*Advanced: Uniform/Triangular can use explicit min/max/mode if needed. Beta is always 0-1. Gamma/Log-normal are always positive.*
+"""
+)
 distribution_options = ["Normal", "Log-normal", "Uniform", "Triangular", "Beta", "Gamma"]
 
 # CAC Parameters
 st.sidebar.write("**Customer Acquisition Cost**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    cac_distribution = st.selectbox("CAC Distribution", distribution_options, index=0, key="cac_dist")
+    cac_distribution = st.selectbox("CAC Distribution", distribution_options, index=0, key="cac_dist", help=info_tooltip)
 with col2:
     cac_mean = st.number_input("Mean ($)", value=150.0, min_value=0.0, key="cac_mean")
 with col3:
@@ -69,7 +74,7 @@ with col3:
 st.sidebar.write("**Monthly New Customers**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    acquisition_rate_distribution = st.selectbox("Acquisition Distribution", distribution_options, index=5, key="acq_rate_dist")
+    acquisition_rate_distribution = st.selectbox("Acquisition Distribution", distribution_options, index=5, key="acq_rate_dist", help=info_tooltip)
 with col2:
     acquisition_rate_mean = st.number_input("Mean", value=100.0, min_value=0.0, key="acq_rate_mean")
 with col3:
@@ -79,7 +84,7 @@ with col3:
 st.sidebar.write("**Monthly Growth Rate**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    acquisition_growth_distribution = st.selectbox("Growth Distribution", distribution_options, index=0, key="acq_growth_dist")
+    acquisition_growth_distribution = st.selectbox("Growth Distribution", distribution_options, index=0, key="acq_growth_dist", help=info_tooltip)
 with col2:
     acquisition_growth_mean = st.number_input("Mean (%)", value=2.0, min_value=-10.0, max_value=50.0, key="acq_growth_mean") / 100
 with col3:
@@ -92,7 +97,7 @@ st.sidebar.subheader("💰 Revenue")
 st.sidebar.write("**Monthly Recurring Revenue per Customer**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    mrr_distribution = st.selectbox("MRR Distribution", distribution_options, index=1, key="mrr_dist")
+    mrr_distribution = st.selectbox("MRR Distribution", distribution_options, index=1, key="mrr_dist", help=info_tooltip)
 with col2:
     mrr_mean = st.number_input("Mean ($)", value=50.0, min_value=0.0, key="mrr_mean")
 with col3:
@@ -102,7 +107,7 @@ with col3:
 st.sidebar.write("**Annual Churn Rate**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    churn_rate_distribution = st.selectbox("Churn Distribution", distribution_options, index=4, key="churn_dist")
+    churn_rate_distribution = st.selectbox("Churn Distribution", distribution_options, index=4, key="churn_dist", help=info_tooltip)
 with col2:
     churn_rate_mean = st.number_input("Mean (%)", value=15.0, min_value=0.0, max_value=100.0, key="churn_mean") / 100
 with col3:
@@ -115,7 +120,7 @@ st.sidebar.subheader("💸 Costs")
 st.sidebar.write("**Monthly Fixed Costs**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    fixed_costs_distribution = st.selectbox("Fixed Costs Distribution", distribution_options, index=0, key="fixed_dist")
+    fixed_costs_distribution = st.selectbox("Fixed Costs Distribution", distribution_options, index=0, key="fixed_dist", help=info_tooltip)
 with col2:
     fixed_costs_mean = st.number_input("Mean ($)", value=10000.0, min_value=0.0, key="fixed_mean")
 with col3:
@@ -125,7 +130,7 @@ with col3:
 st.sidebar.write("**Monthly Support Cost per Customer**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    support_cost_distribution = st.selectbox("Support Cost Distribution", distribution_options, index=1, key="support_dist")
+    support_cost_distribution = st.selectbox("Support Cost Distribution", distribution_options, index=1, key="support_dist", help=info_tooltip)
 with col2:
     support_cost_mean = st.number_input("Mean ($)", value=5.0, min_value=0.0, key="support_mean")
 with col3:
@@ -135,7 +140,7 @@ with col3:
 st.sidebar.write("**Initial R&D Cost**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    rd_cost_distribution = st.selectbox("R&D Cost Distribution", distribution_options, index=0, key="rd_dist")
+    rd_cost_distribution = st.selectbox("R&D Cost Distribution", distribution_options, index=0, key="rd_dist", help=info_tooltip)
 with col2:
     rd_cost_mean = st.number_input("Mean ($)", value=100000.0, min_value=0.0, key="rd_mean")
 with col3:
@@ -145,7 +150,7 @@ with col3:
 st.sidebar.write("**Monthly Technology Cost**")
 col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    tech_cost_distribution = st.selectbox("Tech Cost Distribution", distribution_options, index=0, key="tech_dist")
+    tech_cost_distribution = st.selectbox("Tech Cost Distribution", distribution_options, index=0, key="tech_dist", help=info_tooltip)
 with col2:
     tech_cost_mean = st.number_input("Mean ($)", value=2000.0, min_value=0.0, key="tech_mean")
 with col3:
@@ -257,7 +262,7 @@ def generate_random_samples(num_sims):
         tech_cost_distribution, tech_cost_mean, tech_cost_std, num_sims, min_val=0
     )
     
-    return {
+    params = {
         'cac': cac_samples,
         'mrr': mrr_samples,
         'churn_rate': churn_samples,
@@ -268,6 +273,40 @@ def generate_random_samples(num_sims):
         'rd_cost': rd_cost_samples,
         'tech_cost': tech_cost_samples
     }
+    # Apply risks if any
+    if 'risks' in st.session_state and st.session_state['risks']:
+        params, risk_occurred = apply_risks_to_params(params, num_sims)
+    else:
+        risk_occurred = [{} for _ in range(num_sims)]
+    return params, risk_occurred
+
+# --- Risk Application in Simulation ---
+# (In generate_random_samples, after sampling base params, apply risks)
+# We'll add a risk_occurred dict for each sim, and multiplicatively adjust params
+
+def apply_risks_to_params(params, num_sims):
+    # params: dict of arrays (one per sim)
+    # returns: (adjusted_params, risk_occurred: list of dicts)
+    adjusted = {k: v.copy() for k, v in params.items()}
+    risk_occurred = []
+    for i in range(num_sims):
+        sim_risk_flags = {}
+        for risk in st.session_state['risks']:
+            if not risk['enabled']:
+                sim_risk_flags[risk['name']] = 0
+                continue
+            if np.random.rand() < risk['likelihood']:
+                # Sample severity
+                sev = generate_samples_by_distribution(
+                    risk['severity_dist'], risk['severity_mean'], risk['severity_std'], 1, min_val=-1, max_val=1
+                )[0]
+                # Multiplicative impact
+                adjusted[risk['target_param']][i] *= (1 + sev)
+                sim_risk_flags[risk['name']] = 1
+            else:
+                sim_risk_flags[risk['name']] = 0
+        risk_occurred.append(sim_risk_flags)
+    return adjusted, risk_occurred
 
 def simulate_business(params, months=60):
     """Simulate business for given parameters over specified months (5 years = 60 months)"""
@@ -353,9 +392,8 @@ def simulate_business(params, months=60):
 def run_simulation():
     """Function to run the Monte Carlo simulation"""
     with st.spinner("Running Monte Carlo simulation..."):
-        # Generate random samples
-        samples = generate_random_samples(num_simulations)
-        
+        # Generate random samples and apply risks
+        samples, risk_occurred = generate_random_samples(num_simulations)
         # Run simulations
         results = []
         simulation_inputs = []  # Store input parameters for each simulation
@@ -383,6 +421,7 @@ def run_simulation():
         st.session_state.annual_ebitda_results = annual_ebitda_results
         st.session_state.full_results = results  # Store full results for CSV export
         st.session_state.simulation_inputs = simulation_inputs  # Store input parameters
+        st.session_state.risk_occurred = risk_occurred  # Store risk flags for CSV export
         st.session_state.simulation_complete = True
 
 # Create a hash of current parameters to detect changes
@@ -415,7 +454,9 @@ current_params = {
     'rd_cost_distribution': rd_cost_distribution,
     'tech_cost_mean': tech_cost_mean,
     'tech_cost_std': tech_cost_std,
-    'tech_cost_distribution': tech_cost_distribution
+    'tech_cost_distribution': tech_cost_distribution,
+    # Include risks in parameter hash for change detection
+    'risks': str(st.session_state.get('risks', []))
 }
 
 # Check if parameters have changed or if it's the first run
@@ -451,6 +492,340 @@ if 'annual_ebitda_results' not in st.session_state:
     st.session_state.annual_ebitda_results = []
 if 'simulation_inputs' not in st.session_state:
     st.session_state.simulation_inputs = []
+
+# --- RISK MANAGEMENT SYSTEM ---
+
+# Initialize risks in session state
+if 'risks' not in st.session_state:
+    st.session_state['risks'] = []  # Each risk: dict with keys as below
+if 'risk_modal_open' not in st.session_state:
+    st.session_state['risk_modal_open'] = False
+if 'risk_modal_mode' not in st.session_state:
+    st.session_state['risk_modal_mode'] = 'add'  # or 'edit' or 'view'
+if 'risk_modal_index' not in st.session_state:
+    st.session_state['risk_modal_index'] = None
+
+# List of all possible target parameters
+parameter_choices = [
+    ('cac', 'Customer Acquisition Cost'),
+    ('acquisition_rate', 'Monthly New Customers'),
+    ('acquisition_growth', 'Monthly Growth Rate'),
+    ('mrr', 'Monthly Recurring Revenue per Customer'),
+    ('churn_rate', 'Annual Churn Rate'),
+    ('fixed_costs', 'Monthly Fixed Costs'),
+    ('support_cost', 'Monthly Support Cost per Customer'),
+    ('rd_cost', 'Initial R&D Cost'),
+    ('tech_cost', 'Monthly Technology Cost'),
+]
+
+# --- Sidebar: Risk List & Add Button ---
+st.sidebar.markdown('---')
+st.sidebar.subheader('⚠️ Risks')
+if len(st.session_state['risks']) == 0:
+    st.sidebar.caption('No risks defined yet.')
+
+def risk_toggle_callback():
+    # Force parameter hash to be recalculated by updating previous hash
+    st.session_state.previous_params_hash = ""
+    st.session_state['force_rerun'] = not st.session_state.get('force_rerun', False)
+
+for i, risk in enumerate(st.session_state['risks']):
+    col1, col2, col3 = st.sidebar.columns([4, 2, 1])
+    with col1:
+        st.write(f"**{risk['name']}**")
+        st.caption(f"P: {risk['likelihood']*100:.0f}% | {dict(parameter_choices)[risk['target_param']]}")
+    with col2:
+        enabled = st.checkbox(
+            'Enabled',
+            value=risk['enabled'],
+            key=f"risk_enabled_{i}",
+            on_change=risk_toggle_callback
+        )
+        st.session_state['risks'][i]['enabled'] = enabled
+    with col3:
+        if st.button('✏️', key=f"edit_risk_{i}"):
+            st.session_state['risk_modal_open'] = True
+            st.session_state['risk_modal_mode'] = 'edit'
+            st.session_state['risk_modal_index'] = i
+
+if st.sidebar.button('➕ Add Risk'):
+    st.session_state['risk_modal_open'] = True
+    st.session_state['risk_modal_mode'] = 'add'
+    st.session_state['risk_modal_index'] = None
+
+# --- Modal for Add/Edit/View/Delete Risk ---
+# Inject custom CSS for modal centering and width
+st.markdown('''
+    <style>
+    /* --- Modal styling for streamlit-modal package --- */
+    
+    /* Target streamlit-modal container */
+    .streamlit-modal,
+    .streamlit-modal .modal-container,
+    div[data-modal="true"],
+    div[data-testid="stModal"],
+    div[data-testid="stModal"] div[role="dialog"],
+    div[data-testid="stModal"] > div:first-child {
+        max-width: 650px !important;
+        width: 65vw !important;
+        min-width: 400px !important;
+        min-height: 400px !important;
+        margin: 2rem auto !important;
+        left: 50% !important;
+        right: auto !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+        border-radius: 14px !important;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.25) !important;
+        background: #181825 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+    }
+    
+    /* Mobile responsiveness for streamlit-modal */
+    @media (max-width: 768px) {
+        .streamlit-modal,
+        .streamlit-modal .modal-container,
+        div[data-modal="true"],
+        div[data-testid="stModal"],
+        div[data-testid="stModal"] div[role="dialog"],
+        div[data-testid="stModal"] > div:first-child {
+            max-width: 95vw !important;
+            width: 95vw !important;
+            min-width: 320px !important;
+            margin: 1rem !important;
+            border-radius: 8px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .streamlit-modal,
+        .streamlit-modal .modal-container,
+        div[data-modal="true"],
+        div[data-testid="stModal"],
+        div[data-testid="stModal"] div[role="dialog"],
+        div[data-testid="stModal"] > div:first-child {
+            max-width: 98vw !important;
+            width: 98vw !important;
+            margin: 0.5rem !important;
+            border-radius: 4px !important;
+        }
+    }
+    
+    /* Modal content scrollability - target multiple possible containers */
+    .streamlit-modal .modal-content,
+    .streamlit-modal .modal-body,
+    div[data-modal="true"] > div,
+    div[data-testid="stModal"] div[role="dialog"] > div,
+    div[data-testid="stModal"] > div:first-child > div,
+    div[data-testid="stModal"] .element-container {
+        max-height: 85vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 1.5rem !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #444 #222 !important;
+    }
+    
+    /* Webkit scrollbar styling for modal content */
+    .streamlit-modal .modal-content::-webkit-scrollbar,
+    .streamlit-modal .modal-body::-webkit-scrollbar,
+    div[data-modal="true"] > div::-webkit-scrollbar,
+    div[data-testid="stModal"] div[role="dialog"] > div::-webkit-scrollbar,
+    div[data-testid="stModal"] > div:first-child > div::-webkit-scrollbar {
+        width: 8px !important;
+    }
+    
+    .streamlit-modal .modal-content::-webkit-scrollbar-track,
+    .streamlit-modal .modal-body::-webkit-scrollbar-track,
+    div[data-modal="true"] > div::-webkit-scrollbar-track,
+    div[data-testid="stModal"] div[role="dialog"] > div::-webkit-scrollbar-track,
+    div[data-testid="stModal"] > div:first-child > div::-webkit-scrollbar-track {
+        background: #222 !important;
+        border-radius: 4px !important;
+    }
+    
+    .streamlit-modal .modal-content::-webkit-scrollbar-thumb,
+    .streamlit-modal .modal-body::-webkit-scrollbar-thumb,
+    div[data-modal="true"] > div::-webkit-scrollbar-thumb,
+    div[data-testid="stModal"] div[role="dialog"] > div::-webkit-scrollbar-thumb,
+    div[data-testid="stModal"] > div:first-child > div::-webkit-scrollbar-thumb {
+        background: #444 !important;
+        border-radius: 4px !important;
+    }
+    
+    .streamlit-modal .modal-content::-webkit-scrollbar-thumb:hover,
+    .streamlit-modal .modal-body::-webkit-scrollbar-thumb:hover,
+    div[data-modal="true"] > div::-webkit-scrollbar-thumb:hover,
+    div[data-testid="stModal"] div[role="dialog"] > div::-webkit-scrollbar-thumb:hover,
+    div[data-testid="stModal"] > div:first-child > div::-webkit-scrollbar-thumb:hover {
+        background: #666 !important;
+    }
+    
+    /* Ensure modal backdrop doesn't interfere */
+    .streamlit-modal-backdrop,
+    div[data-modal="true"]::before {
+        background: rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* Form improvements inside modal */
+    .streamlit-modal .stForm,
+    div[data-modal="true"] .stForm,
+    div[data-testid="stModal"] .stForm {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Button positioning and spacing */
+    .streamlit-modal button,
+    div[data-modal="true"] button,
+    div[data-testid="stModal"] button {
+        margin-bottom: 0.5rem !important;
+        margin-top: 1rem !important;
+    }
+    
+    /* Form elements spacing */
+    .streamlit-modal .stTextInput,
+    .streamlit-modal .stTextArea,
+    .streamlit-modal .stSlider,
+    .streamlit-modal .stSelectbox,
+    .streamlit-modal .stNumberInput,
+    .streamlit-modal .stCheckbox,
+    div[data-modal="true"] .stTextInput,
+    div[data-modal="true"] .stTextArea,
+    div[data-modal="true"] .stSlider,
+    div[data-modal="true"] .stSelectbox,
+    div[data-modal="true"] .stNumberInput,
+    div[data-modal="true"] .stCheckbox,
+    div[data-testid="stModal"] .stTextInput,
+    div[data-testid="stModal"] .stTextArea,
+    div[data-testid="stModal"] .stSlider,
+    div[data-testid="stModal"] .stSelectbox,
+    div[data-testid="stModal"] .stNumberInput,
+    div[data-testid="stModal"] .stCheckbox {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Button container spacing */
+    .streamlit-modal div[data-testid="column"],
+    div[data-modal="true"] div[data-testid="column"],
+    div[data-testid="stModal"] div[data-testid="column"] {
+        padding-top: 1rem !important;
+    }
+    
+    /* Ensure text areas don't get too tall */
+    .streamlit-modal .stTextArea textarea,
+    div[data-modal="true"] .stTextArea textarea,
+    div[data-testid="stModal"] .stTextArea textarea {
+        min-height: 80px !important;
+        max-height: 120px !important;
+    }
+    
+    /* Target native Streamlit dialog (st.dialog) */
+    [data-testid="stDialog"] {
+        max-width: 650px !important;
+        width: 65vw !important;
+        min-width: 400px !important;
+        margin: 2rem auto !important;
+        max-height: 85vh !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Target streamlit-modal specific classes */
+    .streamlit-modal-container {
+        max-width: 650px !important;
+        width: 65vw !important;
+        min-width: 400px !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+        z-index: 1000 !important;
+    }
+    
+    /* Alternative approach - use CSS custom properties */
+    :root {
+        --modal-width: 65vw;
+        --modal-max-width: 650px;
+        --modal-min-width: 400px;
+        --modal-height: 85vh;
+    }
+    </style>
+''', unsafe_allow_html=True)
+
+def risk_modal():
+    import streamlit as st
+    if st.session_state['risk_modal_mode'] == 'add':
+        modal_title = 'Add Risk'
+        risk_data = {
+            'name': '',
+            'description': '',
+            'likelihood': 0.1,
+            'severity_dist': 'Normal',
+            'severity_mean': 0.0,
+            'severity_std': 0.05,
+            'target_param': 'cac',
+            'enabled': True
+        }
+    else:
+        modal_title = 'Edit Risk'
+        risk_data = st.session_state['risks'][st.session_state['risk_modal_index']].copy()
+
+    with st.form('risk_form', clear_on_submit=False):
+        st.subheader(modal_title)
+        risk_data['name'] = st.text_input('Risk Name', value=risk_data['name'])
+        risk_data['description'] = st.text_area('Description', value=risk_data['description'])
+        risk_data['likelihood'] = st.slider('Likelihood (probability per simulation)', 0.0, 1.0, risk_data['likelihood'], 0.01)
+        risk_data['severity_dist'] = st.selectbox('Severity Distribution', distribution_options, index=distribution_options.index(risk_data['severity_dist']))
+        risk_data['severity_mean'] = st.number_input('Severity Mean (%)', value=risk_data['severity_mean']*100, min_value=-100.0, max_value=100.0, step=0.1) / 100
+        risk_data['severity_std'] = st.number_input('Severity Std Dev (%)', value=risk_data['severity_std']*100, min_value=0.0, max_value=100.0, step=0.1) / 100
+        st.markdown('**Target Parameter**')
+        risk_data['target_param'] = st.selectbox(' ', [k for k, v in parameter_choices], format_func=lambda k: dict(parameter_choices)[k], index=[k for k, v in parameter_choices].index(risk_data['target_param']))
+        risk_data['enabled'] = st.checkbox('Enabled', value=risk_data['enabled'])
+        col1, col2, col3 = st.columns([2,2,2])
+        with col1:
+            save = st.form_submit_button('Save')
+        with col2:
+            cancel = st.form_submit_button('Cancel')
+        with col3:
+            delete = st.form_submit_button('Delete') if st.session_state['risk_modal_mode'] == 'edit' else False
+
+    if save:
+        if st.session_state['risk_modal_mode'] == 'add':
+            st.session_state['risks'].append(risk_data)
+        else:
+            st.session_state['risks'][st.session_state['risk_modal_index']] = risk_data
+        # Force parameter hash to be recalculated to trigger simulation rerun
+        st.session_state.previous_params_hash = ""
+        st.session_state['risk_modal_open'] = False
+        st.rerun()
+    elif cancel:
+        st.session_state['risk_modal_open'] = False
+        st.rerun()
+    elif delete and st.session_state['risk_modal_mode'] == 'edit':
+        del st.session_state['risks'][st.session_state['risk_modal_index']]
+        # Force parameter hash to be recalculated to trigger simulation rerun
+        st.session_state.previous_params_hash = ""
+        st.session_state['risk_modal_open'] = False
+        st.rerun()
+
+if st.session_state['risk_modal_open']:
+    # Try using st.dialog if available (Streamlit 1.35+)
+    try:
+        @st.dialog("Risk Management")
+        def risk_dialog():
+            risk_modal()
+        risk_dialog()
+    except AttributeError:
+        # Fallback to streamlit-modal
+        import streamlit_modal as modal
+        with modal.container():
+            risk_modal()
 
 # Display results if simulation has been run
 if st.session_state.simulation_complete and len(st.session_state.npv_results) > 0:
@@ -547,6 +922,21 @@ if st.session_state.simulation_complete and len(st.session_state.npv_results) > 
                 for year in range(1, 6):
                     csv_data[f'EBITDA_Year_{year}'] = [sim[year-1] for sim in st.session_state.annual_ebitda_results]
             
+            # Add risk occurrence data
+            if hasattr(st.session_state, 'risk_occurred') and st.session_state.risk_occurred:
+                # Get all unique risk names from the current risks and historical occurrences
+                all_risk_names = set()
+                if st.session_state.get('risks'):
+                    all_risk_names.update(risk['name'] for risk in st.session_state['risks'])
+                for sim_risks in st.session_state.risk_occurred:
+                    all_risk_names.update(sim_risks.keys())
+                
+                # Create columns for each risk (1 = occurred, 0 = didn't occur)
+                for risk_name in sorted(all_risk_names):
+                    csv_data[f'Risk_{risk_name}_Occurred'] = [
+                        sim_risks.get(risk_name, 0) for sim_risks in st.session_state.risk_occurred
+                    ]
+            
             # Create DataFrame and CSV
             df = pd.DataFrame(csv_data)
             csv_string = df.to_csv(index=False)
@@ -571,8 +961,9 @@ if st.session_state.simulation_complete and len(st.session_state.npv_results) > 
             - **Input Assumptions**: The random parameter values used for each simulation
             - **Output Results**: NPV, ARR, CLV, Final Customers from each simulation
             - **Annual Breakdowns**: Revenue and EBITDA for each year (Years 1-5)
+            - **Risk Occurrences**: Binary indicators (1/0) for each risk occurrence per simulation
             
-            This allows you to analyze which input combinations lead to specific outcomes!
+            This allows you to analyze which input combinations and risk scenarios lead to specific outcomes!
             """)
     
     st.markdown("---")
