@@ -33,93 +33,229 @@ if auto_run:
 else:
     st.sidebar.info("🎯 Click 'Run Simulation' button to start analysis")
 
+# Distribution Guide
+with st.sidebar.expander("📊 Distribution Guide"):
+    st.markdown("""
+    **Distribution Types:**
+    - **Normal**: Bell curve, symmetric around mean
+    - **Log-normal**: Right-skewed, good for positive values like revenue
+    - **Uniform**: Equal probability between bounds
+    - **Triangular**: Most likely at mean, linear drop-off
+    - **Beta**: Good for rates/percentages (0-100%)
+    - **Gamma**: Right-skewed, good for positive values with lower bound
+    
+    💡 *Choose distributions that match your business assumptions!*
+    """)
+
 st.sidebar.markdown("---")
 
 # Customer Acquisition Parameters
 st.sidebar.subheader("👥 Customer Acquisition")
-col1, col2 = st.sidebar.columns(2)
 
+# Distribution options
+distribution_options = ["Normal", "Log-normal", "Uniform", "Triangular", "Beta", "Gamma"]
+
+# CAC Parameters
+st.sidebar.write("**Customer Acquisition Cost**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    st.write("**Expected Values**")
-    cac_mean = st.number_input("Customer Acquisition Cost ($)", value=150.0, min_value=0.0)
-    acquisition_rate_mean = st.number_input("Monthly New Customers", value=100.0, min_value=0.0)
-    acquisition_growth_mean = st.number_input("Monthly Growth Rate (%)", value=2.0, min_value=-10.0, max_value=50.0) / 100
-
+    cac_distribution = st.selectbox("CAC Distribution", distribution_options, index=0, key="cac_dist")
 with col2:
-    st.write("**Standard Deviation**")
-    cac_std = st.number_input("CAC Std Dev ($)", value=30.0, min_value=0.1)
-    acquisition_rate_std = st.number_input("Acquisition Rate Std Dev", value=20.0, min_value=0.1)
-    acquisition_growth_std = st.number_input("Growth Rate Std Dev (%)", value=1.0, min_value=0.1, max_value=10.0) / 100
+    cac_mean = st.number_input("Mean ($)", value=150.0, min_value=0.0, key="cac_mean")
+with col3:
+    cac_std = st.number_input("Std Dev ($)", value=30.0, min_value=0.1, key="cac_std")
+
+# Acquisition Rate Parameters
+st.sidebar.write("**Monthly New Customers**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    acquisition_rate_distribution = st.selectbox("Acquisition Distribution", distribution_options, index=5, key="acq_rate_dist")
+with col2:
+    acquisition_rate_mean = st.number_input("Mean", value=100.0, min_value=0.0, key="acq_rate_mean")
+with col3:
+    acquisition_rate_std = st.number_input("Std Dev", value=20.0, min_value=0.1, key="acq_rate_std")
+
+# Growth Rate Parameters
+st.sidebar.write("**Monthly Growth Rate**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    acquisition_growth_distribution = st.selectbox("Growth Distribution", distribution_options, index=0, key="acq_growth_dist")
+with col2:
+    acquisition_growth_mean = st.number_input("Mean (%)", value=2.0, min_value=-10.0, max_value=50.0, key="acq_growth_mean") / 100
+with col3:
+    acquisition_growth_std = st.number_input("Std Dev (%)", value=1.0, min_value=0.1, max_value=10.0, key="acq_growth_std") / 100
 
 # Revenue Parameters
 st.sidebar.subheader("💰 Revenue")
-col1, col2 = st.sidebar.columns(2)
 
+# MRR Parameters
+st.sidebar.write("**Monthly Recurring Revenue per Customer**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    mrr_mean = st.number_input("Monthly Recurring Revenue per Customer ($)", value=50.0, min_value=0.0)
-    churn_rate_mean = st.number_input("Annual Churn Rate (%)", value=15.0, min_value=0.0, max_value=100.0) / 100
-
+    mrr_distribution = st.selectbox("MRR Distribution", distribution_options, index=1, key="mrr_dist")
 with col2:
-    mrr_std = st.number_input("MRR Std Dev ($)", value=10.0, min_value=0.1)
-    churn_rate_std = st.number_input("Churn Rate Std Dev (%)", value=3.0, min_value=0.1, max_value=20.0) / 100
+    mrr_mean = st.number_input("Mean ($)", value=50.0, min_value=0.0, key="mrr_mean")
+with col3:
+    mrr_std = st.number_input("Std Dev ($)", value=10.0, min_value=0.1, key="mrr_std")
+
+# Churn Rate Parameters
+st.sidebar.write("**Annual Churn Rate**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    churn_rate_distribution = st.selectbox("Churn Distribution", distribution_options, index=4, key="churn_dist")
+with col2:
+    churn_rate_mean = st.number_input("Mean (%)", value=15.0, min_value=0.0, max_value=100.0, key="churn_mean") / 100
+with col3:
+    churn_rate_std = st.number_input("Std Dev (%)", value=3.0, min_value=0.1, max_value=20.0, key="churn_std") / 100
 
 # Cost Parameters
 st.sidebar.subheader("💸 Costs")
-col1, col2 = st.sidebar.columns(2)
 
+# Fixed Costs Parameters
+st.sidebar.write("**Monthly Fixed Costs**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
 with col1:
-    fixed_costs_mean = st.number_input("Monthly Fixed Costs ($)", value=10000.0, min_value=0.0)
-    support_cost_mean = st.number_input("Monthly Support Cost per Customer ($)", value=5.0, min_value=0.0)
-    rd_cost_mean = st.number_input("Initial R&D Cost ($)", value=100000.0, min_value=0.0)
-    tech_cost_mean = st.number_input("Monthly Technology Cost ($)", value=2000.0, min_value=0.0)
-
+    fixed_costs_distribution = st.selectbox("Fixed Costs Distribution", distribution_options, index=0, key="fixed_dist")
 with col2:
-    fixed_costs_std = st.number_input("Fixed Costs Std Dev ($)", value=2000.0, min_value=0.1)
-    support_cost_std = st.number_input("Support Cost Std Dev ($)", value=1.0, min_value=0.1)
-    rd_cost_std = st.number_input("R&D Cost Std Dev ($)", value=20000.0, min_value=0.1)
-    tech_cost_std = st.number_input("Tech Cost Std Dev ($)", value=500.0, min_value=0.1)
+    fixed_costs_mean = st.number_input("Mean ($)", value=10000.0, min_value=0.0, key="fixed_mean")
+with col3:
+    fixed_costs_std = st.number_input("Std Dev ($)", value=2000.0, min_value=0.1, key="fixed_std")
+
+# Support Cost Parameters
+st.sidebar.write("**Monthly Support Cost per Customer**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    support_cost_distribution = st.selectbox("Support Cost Distribution", distribution_options, index=1, key="support_dist")
+with col2:
+    support_cost_mean = st.number_input("Mean ($)", value=5.0, min_value=0.0, key="support_mean")
+with col3:
+    support_cost_std = st.number_input("Std Dev ($)", value=1.0, min_value=0.1, key="support_std")
+
+# R&D Cost Parameters
+st.sidebar.write("**Initial R&D Cost**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    rd_cost_distribution = st.selectbox("R&D Cost Distribution", distribution_options, index=0, key="rd_dist")
+with col2:
+    rd_cost_mean = st.number_input("Mean ($)", value=100000.0, min_value=0.0, key="rd_mean")
+with col3:
+    rd_cost_std = st.number_input("Std Dev ($)", value=20000.0, min_value=0.1, key="rd_std")
+
+# Technology Cost Parameters
+st.sidebar.write("**Monthly Technology Cost**")
+col1, col2, col3 = st.sidebar.columns([2, 1, 1])
+with col1:
+    tech_cost_distribution = st.selectbox("Tech Cost Distribution", distribution_options, index=0, key="tech_dist")
+with col2:
+    tech_cost_mean = st.number_input("Mean ($)", value=2000.0, min_value=0.0, key="tech_mean")
+with col3:
+    tech_cost_std = st.number_input("Std Dev ($)", value=500.0, min_value=0.1, key="tech_std")
+
+def generate_samples_by_distribution(distribution_type, mean, std, num_sims, min_val=0, max_val=1):
+    """Generate samples based on the selected distribution type"""
+    
+    if distribution_type == "Normal":
+        samples = np.random.normal(mean, std, num_sims)
+        
+    elif distribution_type == "Log-normal":
+        # Convert mean and std to log-normal parameters
+        sigma = np.sqrt(np.log(1 + (std/mean)**2))
+        mu = np.log(mean) - 0.5 * sigma**2
+        samples = np.random.lognormal(mu, sigma, num_sims)
+        
+    elif distribution_type == "Uniform":
+        # Use mean ± std as bounds for uniform distribution
+        low = max(mean - std, min_val)
+        high = mean + std
+        samples = np.random.uniform(low, high, num_sims)
+        
+    elif distribution_type == "Triangular":
+        # Use mean as mode, and mean ± std as bounds
+        low = max(mean - std, min_val)
+        high = mean + std
+        mode = mean
+        samples = np.random.triangular(low, mode, high, num_sims)
+        
+    elif distribution_type == "Beta":
+        # Convert mean and std to alpha, beta parameters for Beta distribution
+        # Suitable for values between 0 and 1 (like percentages/rates)
+        var = std**2
+        if var >= mean * (1 - mean):
+            # Fallback to avoid invalid parameters
+            alpha, beta = 1, 1
+        else:
+            alpha = mean * ((mean * (1 - mean)) / var - 1)
+            beta = (1 - mean) * ((mean * (1 - mean)) / var - 1)
+        alpha = max(alpha, 0.1)
+        beta = max(beta, 0.1)
+        samples = np.random.beta(alpha, beta, num_sims)
+        # Scale to appropriate range if not 0-1
+        if max_val != 1:
+            samples = samples * max_val
+            
+    elif distribution_type == "Gamma":
+        # Convert mean and std to shape and scale parameters
+        shape = (mean / std) ** 2
+        scale = std ** 2 / mean
+        samples = np.random.gamma(shape, scale, num_sims)
+        
+    else:
+        # Default to Normal if unknown distribution
+        samples = np.random.normal(mean, std, num_sims)
+    
+    # Ensure non-negative values for most parameters
+    if min_val >= 0:
+        samples = np.maximum(samples, min_val)
+    
+    return samples
 
 def generate_random_samples(num_sims):
-    """Generate random samples for all parameters using appropriate distributions"""
+    """Generate random samples for all parameters using selected distributions"""
     
-    # Customer Acquisition Cost (Normal)
-    cac_samples = np.random.normal(cac_mean, cac_std, num_sims)
-    cac_samples = np.maximum(cac_samples, 0)  # Ensure non-negative
+    # Customer Acquisition Cost
+    cac_samples = generate_samples_by_distribution(
+        cac_distribution, cac_mean, cac_std, num_sims, min_val=0
+    )
     
-    # Monthly Recurring Revenue (Log-normal)
-    mrr_sigma = np.sqrt(np.log(1 + (mrr_std/mrr_mean)**2))
-    mrr_mu = np.log(mrr_mean) - 0.5 * mrr_sigma**2
-    mrr_samples = np.random.lognormal(mrr_mu, mrr_sigma, num_sims)
+    # Monthly Recurring Revenue per Customer
+    mrr_samples = generate_samples_by_distribution(
+        mrr_distribution, mrr_mean, mrr_std, num_sims, min_val=0
+    )
     
-    # Annual Churn Rate (Beta distribution)
-    # Convert mean and std to alpha, beta parameters
-    churn_var = churn_rate_std**2
-    churn_alpha = churn_rate_mean * ((churn_rate_mean * (1 - churn_rate_mean)) / churn_var - 1)
-    churn_beta = (1 - churn_rate_mean) * ((churn_rate_mean * (1 - churn_rate_mean)) / churn_var - 1)
-    churn_samples = np.random.beta(max(churn_alpha, 0.1), max(churn_beta, 0.1), num_sims)
+    # Annual Churn Rate (keep as proportion 0-1)
+    churn_samples = generate_samples_by_distribution(
+        churn_rate_distribution, churn_rate_mean, churn_rate_std, num_sims, min_val=0, max_val=1
+    )
     
-    # Customer Acquisition Rate (Gamma distribution)
-    acq_shape = (acquisition_rate_mean / acquisition_rate_std) ** 2
-    acq_scale = acquisition_rate_std ** 2 / acquisition_rate_mean
-    acquisition_rate_samples = np.random.gamma(acq_shape, acq_scale, num_sims)
+    # Customer Acquisition Rate
+    acquisition_rate_samples = generate_samples_by_distribution(
+        acquisition_rate_distribution, acquisition_rate_mean, acquisition_rate_std, num_sims, min_val=0
+    )
     
-    # Customer Acquisition Growth Rate (Normal)
-    acquisition_growth_samples = np.random.normal(acquisition_growth_mean, acquisition_growth_std, num_sims)
+    # Customer Acquisition Growth Rate (can be negative)
+    acquisition_growth_samples = generate_samples_by_distribution(
+        acquisition_growth_distribution, acquisition_growth_mean, acquisition_growth_std, num_sims, min_val=-1
+    )
     
-    # Support Cost per Customer (Log-normal)
-    support_sigma = np.sqrt(np.log(1 + (support_cost_std/support_cost_mean)**2))
-    support_mu = np.log(support_cost_mean) - 0.5 * support_sigma**2
-    support_cost_samples = np.random.lognormal(support_mu, support_sigma, num_sims)
+    # Support Cost per Customer
+    support_cost_samples = generate_samples_by_distribution(
+        support_cost_distribution, support_cost_mean, support_cost_std, num_sims, min_val=0
+    )
     
-    # Other costs (Normal)
-    fixed_costs_samples = np.random.normal(fixed_costs_mean, fixed_costs_std, num_sims)
-    rd_cost_samples = np.random.normal(rd_cost_mean, rd_cost_std, num_sims)
-    tech_cost_samples = np.random.normal(tech_cost_mean, tech_cost_std, num_sims)
+    # Fixed Costs
+    fixed_costs_samples = generate_samples_by_distribution(
+        fixed_costs_distribution, fixed_costs_mean, fixed_costs_std, num_sims, min_val=0
+    )
     
-    # Ensure non-negative values
-    fixed_costs_samples = np.maximum(fixed_costs_samples, 0)
-    rd_cost_samples = np.maximum(rd_cost_samples, 0)
-    tech_cost_samples = np.maximum(tech_cost_samples, 0)
+    # R&D Cost
+    rd_cost_samples = generate_samples_by_distribution(
+        rd_cost_distribution, rd_cost_mean, rd_cost_std, num_sims, min_val=0
+    )
+    
+    # Technology Cost
+    tech_cost_samples = generate_samples_by_distribution(
+        tech_cost_distribution, tech_cost_mean, tech_cost_std, num_sims, min_val=0
+    )
     
     return {
         'cac': cac_samples,
@@ -255,22 +391,31 @@ current_params = {
     'discount_rate': discount_rate,
     'cac_mean': cac_mean,
     'cac_std': cac_std,
+    'cac_distribution': cac_distribution,
     'acquisition_rate_mean': acquisition_rate_mean,
     'acquisition_rate_std': acquisition_rate_std,
+    'acquisition_rate_distribution': acquisition_rate_distribution,
     'acquisition_growth_mean': acquisition_growth_mean,
     'acquisition_growth_std': acquisition_growth_std,
+    'acquisition_growth_distribution': acquisition_growth_distribution,
     'mrr_mean': mrr_mean,
     'mrr_std': mrr_std,
+    'mrr_distribution': mrr_distribution,
     'churn_rate_mean': churn_rate_mean,
     'churn_rate_std': churn_rate_std,
+    'churn_rate_distribution': churn_rate_distribution,
     'fixed_costs_mean': fixed_costs_mean,
     'fixed_costs_std': fixed_costs_std,
+    'fixed_costs_distribution': fixed_costs_distribution,
     'support_cost_mean': support_cost_mean,
     'support_cost_std': support_cost_std,
+    'support_cost_distribution': support_cost_distribution,
     'rd_cost_mean': rd_cost_mean,
     'rd_cost_std': rd_cost_std,
+    'rd_cost_distribution': rd_cost_distribution,
     'tech_cost_mean': tech_cost_mean,
-    'tech_cost_std': tech_cost_std
+    'tech_cost_std': tech_cost_std,
+    'tech_cost_distribution': tech_cost_distribution
 }
 
 # Check if parameters have changed or if it's the first run
@@ -690,6 +835,7 @@ else:
     st.markdown("""
     This Monte Carlo simulation will provide:
     
+    - **Customizable Distributions**: Choose from 6 distribution types for each input parameter
     - **NPV Distribution**: Histogram showing the range of possible Net Present Values
     - **MRR per Customer Distribution**: Histogram showing the range of Monthly Recurring Revenue per customer
     - **ARR Distribution**: Histogram showing the range of possible Annual Recurring Revenue
@@ -723,11 +869,21 @@ else:
 # Model assumptions
 with st.expander("📋 Model Assumptions & Methodology"):
     st.markdown("""
-    ### Statistical Distributions Used:
-    - **Normal Distribution**: Customer Acquisition Cost, Fixed Costs, R&D Cost, Technology Cost, Customer Acquisition Growth Rate
-    - **Log-Normal Distribution**: Monthly Recurring Revenue, Support Cost per Customer (ensures positive values)
-    - **Beta Distribution**: Annual Churn Rate (bounded between 0% and 100%)
-    - **Gamma Distribution**: Customer Acquisition Rate (ensures positive integer-like values)
+    ### Statistical Distributions Available:
+    Each input parameter can use any of these distribution types:
+    - **Normal Distribution**: Bell curve, symmetric around mean - good for costs and growth rates
+    - **Log-Normal Distribution**: Right-skewed, ensures positive values - ideal for revenue metrics
+    - **Uniform Distribution**: Equal probability between bounds - for scenarios with equal likelihood
+    - **Triangular Distribution**: Most likely at mean with linear drop-off - conservative modeling
+    - **Beta Distribution**: Bounded between 0% and 100% - perfect for rates and percentages
+    - **Gamma Distribution**: Right-skewed positive values - suitable for count-like metrics
+    
+    ### Default Distribution Recommendations:
+    - **CAC, Fixed Costs, R&D, Tech Costs**: Normal (default)
+    - **MRR, Support Costs**: Log-normal (default) for positive skew
+    - **Churn Rate**: Beta (default) for percentage bounds
+    - **Acquisition Rate**: Gamma (default) for positive count-like values
+    - **Growth Rate**: Normal (default) allowing negative growth
     
     ### Key Assumptions:
     1. **Time Horizon**: 5 years (60 months)
